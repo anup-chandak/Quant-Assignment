@@ -1,21 +1,28 @@
-# Market Simulator
+# Agent-Based Market Simulator with LLM-Driven Behavior
 
-Agent-Based Market Simulator with LLM-Driven Behavior
-
----
-
-# Setup
-- add openai api key in .env file
-
-# Requirements
-
-- Python 3.9+
-- Docker (optional)
-- No external packages unless specified in `requirements.txt`
+This project simulates a simplified market where multiple trading agents interact by placing buy and sell orders. Each agent can follow predefined strategies or use a local language model to decide trading actions. The simulator is designed for experimenting with market dynamics, strategy benchmarking, and agent-based modeling.
 
 ---
 
-# Run Locally
+## Features
+
+- integration with a local language model
+- Core market engine for matching and settling trades
+- Logging of price evolution, trade history, and agent states
+- Easily extendable for new strategies or agent types
+
+---
+
+## Requirements
+
+- Python 3.9 or higher
+
+Install dependencies:
 
 ```bash
-python3 main.py --strategy random --traders 5 --ticks 50 --init-price 10
+pip install -r requirements.txt
+
+
+python main.py --strategy random --traders 5 --ticks 50 --init-price 10
+
+
