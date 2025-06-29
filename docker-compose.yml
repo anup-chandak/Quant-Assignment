@@ -5,8 +5,7 @@ services:
     build: .
     container_name: market-sim-cli
     env_file:
-      - .env       # ensure your OPENAI_API_KEY is exposed
+      - .env      
     volumes:
-      - ./:/app    # mount code so you can tweak & rerun without rebuild
-    # default CLI args:
+      - ./:/app    
     command: ["--traders", "5", "--ticks", "50", "--init-price", "100.0"]
