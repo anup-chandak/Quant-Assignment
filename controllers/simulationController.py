@@ -61,6 +61,7 @@ class SimulationController:
         for tid in range(self.num_traders):
             trader = Trader(id=tid, cash=1000.0, inventory=0)
             self.trader_access.db.CreateTrader(trader)
-            price_history = self.market_engine.run_simulation()
-            print("Price history:", [round(p, 2) for p in price_history])
+
+        price_history = self.market_engine.run_simulation()
+        print("Price history:", [round(p, 2) for p in price_history])
         print(f"Simulation Completed: {self.num_traders} traders, {self.ticks} ticks.")
