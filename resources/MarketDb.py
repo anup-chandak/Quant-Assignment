@@ -1,4 +1,4 @@
-# resources/MarketDb.py
+
 class MarketDb:
     def __init__(self, init_price=100.0):
         self.price = init_price
