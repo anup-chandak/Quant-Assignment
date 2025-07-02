@@ -1,4 +1,4 @@
-# resources/TraderDb.py
+
 
 class TraderDb:
     def __init__(self):
