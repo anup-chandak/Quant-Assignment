@@ -46,3 +46,4 @@ class MarketEngine:
         new   = max(0.01, old + impact * self.net_demand)
         print(f"[Market] net={self.net_demand}, {old:.2f}→{new:.2f}")
         self.market_access.set_price(new)
+
