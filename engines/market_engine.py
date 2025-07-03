@@ -1,49 +1,41 @@
 from resourceAccess.traderAccess import TraderAccess
 from resourceAccess.marketAccess import MarketAccess
-
+from entities.trader import Trader
+from entities.market import Market
 
 class MarketEngine:
-    def __init__(self, trader_db, market_db, llm_engine, ticks=50):
+    def __init__(self, trader_db, market_db, llm_engine, ticks: int = 50):
         self.trader_access = TraderAccess(trader_db)
         self.market_access = MarketAccess(market_db)
-        self.llm_engine    = llm_engine
-        self.ticks         = ticks
+        self.llm_engine = llm_engine
+        self.ticks = ticks
 
-    def run_simulation(self):
-        price_history = []
+    def run_simulation(self) -> list[float]:
+        market: Market = self.market_access.get_market()
+        traders: list[Trader] = list(self.trader_access.db.traders.values())
+
         for tick in range(self.ticks):
-            price = self.market_access.get_current_price()
-            price_history.append(price)
-            self.net_demand = 0
+            price = market.current_price
+            net_demand = 0
 
-            for trader in self.trader_access.db.traders.values():
+            for trader in traders:
                 dec = self.llm_engine.decide(trader.id, tick, price)
                 action, vol = dec["action"], int(dec["volume"])
-                if action == "buy":  self._buy(trader.id, vol, price)
-                if action == "sell": self._sell(trader.id, vol, price)
 
-            self._update_market()
+                if action == "buy" and trader.try_buy(vol, price):
+                    net_demand += vol
+                elif action == "sell" and trader.try_sell(vol, price):
+                    net_demand -= vol
 
-        return price_history
+                trader.record_net_worth(price)
 
-    def _buy(self, tid, vol, price):
-        cost = vol * price
-        if self.trader_access.get_balance(tid) >= cost:
-            self.trader_access.decrease_balance(tid, cost)
-            self.trader_access.increase_inventory(tid, vol)
-            self.net_demand += vol
+                self.trader_access.db.WriteTraderBalance(trader.id, trader.cash)
+                self.trader_access.db.WriteTraderInventory(trader.id, trader.inventory)
 
-    def _sell(self, tid, vol, price):
-        if self.trader_access.get_inventory(tid) >= vol:
-            rev = vol * price
-            self.trader_access.decrease_inventory(tid, vol)
-            self.trader_access.increase_balance(tid, rev)
-            self.net_demand -= vol
+            old_price = market.current_price
+            market.update_price(net_demand)
+            print(f"[Market] net={net_demand}, {old_price:.2f}→{market.current_price:.2f}")
 
-    def _update_market(self):
-        impact = 0.2
-        old   = self.market_access.get_current_price()
-        new   = max(0.01, old + impact * self.net_demand)
-        print(f"[Market] net={self.net_demand}, {old:.2f}→{new:.2f}")
-        self.market_access.set_price(new)
+            self.market_access.save_market(market)
 
+        return market.price_history
