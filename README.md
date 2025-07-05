@@ -31,7 +31,7 @@ The resource access layer abstracts how traders and market data are stored and r
 
 ## Strategies
 
-The simulation uses a Strategy Pattern for trading behavior. The file `strategies/base.py` defines a `Strategy` interface with an abstract `decide()` method. Concrete strategies—such as LLM, Random, RSI, or Bollinger—inherit from this base and implement `decide()`. The controller selects the strategy by name and invokes `strategy.decide()` through the `LLMEngine`. Adding a new strategy only requires creating a class that implements `decide()`, with no changes needed elsewhere.
+The simulation uses a Strategy Pattern for trading behavior. The file `strategies/base.py` defines a `Strategy` interface with an abstract `decide()` method. Concrete strategies such as LLM, Random, RSI, or Bollinger inherit from this base and implement `decide()`. The controller selects the strategy by name and invokes `strategy.decide()` through the `LLMEngine`. Adding a new strategy only requires creating a class that implements `decide()`, with no changes needed elsewhere.
 
 ## Setup
 
@@ -41,8 +41,8 @@ The simulation uses a Strategy Pattern for trading behavior. The file `strategie
   ```
 
 - Run the project
-```bash
-python main.py --strategy random --traders 5 --ticks 50 --init-price 10
-```
+  ```bash
+  python main.py --strategy random --traders 5 --ticks 50 --init-price 10
+  ```
 
 
