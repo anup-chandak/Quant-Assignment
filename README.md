@@ -56,9 +56,9 @@ Business Logic Encapsulation (Trader & Market Entities): All core trading logic 
 
 ## Strategies
 
-The simulation uses a Strategy Pattern for trading behavior. The file strategies/base.py defines a Strategy interface with sbastract method decide which every class which will inherit strategy class has to have
+The simulation uses a Strategy Pattern for trading behavior. The file strategies/base.py defines a Strategy interface with abstract method decide which every class which will inherit strategy class has to have
 
-Concrete strategies (LLM, Random, RSI, Bollinger) inherit from this base and implement decide. This mirrors the strategy pattern: the context (here LLMEngine or more generally the simulation engine) uses a strategy interface and can swap out the concrete algorithm easilyrefactoring.gururefactoring.guru. For example, LLMStrategy uses an OpenAI model to decide actions, while RandomStrategy picks a random action. The simulation controller picks the strategy class by name, and wraps it with LLMEngine, which simply holds a strategy and calls strategy.decide()
+Concrete strategies (LLM, Random, RSI, Bollinger) inherit from this base and implement decide. This mirrors the strategy pattern: the context (here LLMEngine or more generally the simulation engine) uses a strategy interface and can swap out the concrete algorithm easily. For example, LLMStrategy uses an OpenAI model to decide actions, while RandomStrategy picks a random action. The simulation controller picks the strategy class by name, and wraps it with LLMEngine, which simply holds a strategy and calls strategy.decide()
 
 Thus, adding a new strategy only requires creating a new class that implements decide, with no changes to the engine logic.
 
