@@ -1,75 +1,33 @@
 # Agent-Based Market Simulator with LLM-Driven Behavior
 
-This project simulates a simplified market where multiple trading agents interact by placing buy and sell orders. Each agent can follow predefined strategies or use a local language model to decide trading actions. The simulator is designed for experimenting with market dynamics, strategy benchmarking, and agent-based modeling.
-
----
+This project simulates a simplified market where multiple trading agents interact by placing buy and sell orders. Each agent can follow predefined strategies or use a local language model to decide trading actions. The simulator is designed for experimenting with market dynamics, strategy benchmarking, and agent‑based modeling.
 
 ## Overview
 
-The entry point of the project is main.py. It acts as a wrapper over the CLI defined in presenter/cli.py. 
-
-The CLI parses arguments like strategy, number of traders, ticks, and initial price.
-
- This is a thin presentation layer that merely gathers input and instantiates the simulation controller. 
-
-The CLI is not tightly coupled with business logic. This is aligned with the Clean Architecture idea of separating interface (CLI) from core logic.
-
----
+The entry point of the project is `main.py`, which wraps the CLI defined in `presenter/cli.py`. The CLI parses arguments such as strategy, number of traders, ticks, and initial price. It simply gathers input and instantiates the simulation controller, keeping the interface separate from core logic in line with Clean Architecture principles.
 
 ## Dependency Injection (SimulationController)
 
-The heart of the setup is the SimulationController 
-
-Its constructor takes the CLI parameters and creates the needed components. For example, it instantiates TraderDb and MarketDb, then wraps them in TraderAccess and MarketAccess, and picks a strategy. 
-
-Each dependency is passed through the constructor (a form of constructor injection), rather than being hard-coded internally.
-
-This ensures low coupling and high flexibility. For instance, I can inject a different StrategyEngine (e.g., LLM-based vs Random) without changing controller logic.
-
-Impact Point: “It follows the Dependency Inversion Principle, where high-level modules are not dependent on low-level implementations.”
-
-Here we see that the controller builds and injects all necessary objects explicitly via __init__, which keeps classes loosely coupled. The controller then calls run(), which creates Trader entities and starts the market engine.
-
----
+The `SimulationController` constructor takes the CLI parameters and creates all necessary components. For example, it instantiates `TraderDb` and `MarketDb`, wraps them in `TraderAccess` and `MarketAccess`, and selects a strategy. By passing each dependency through the constructor rather than hard‑coding them, the design achieves low coupling and high flexibility: you can swap in a different `StrategyEngine` without changing controller code. This follows the Dependency Inversion Principle, ensuring high‑level modules do not depend on low‑level implementations.
 
 ## Market Engine (Entities & Data Access)
 
-The MarketEngine (in engines/market_engine.py) runs the simulation loop.
-It accesses the current market state and traders through the resource-access layer:
-
-In each tick, it queries the LLMEngine for each trader’s decision, updates each trader’s cash/inventory via Trader.try_buy/try_sell, and updates the market price via Market.update_price(net_demand).
-
- All state changes are written back to the in-memory databases through the TraderAccess and MarketAccess layers.
-
-This separation means the market engine never manipulates raw data
-
-It’s just the center of business use cases. Entities and interfaces are directly used here.
-
----
+The `MarketEngine` in `engines/market_engine.py` runs the simulation loop. On each tick, it queries the `LLMEngine` for each trader’s decision, updates cash and inventory via `Trader.try_buy()` or `Trader.try_sell()`, and adjusts the market price with `Market.update_price(net_demand)`. All state changes are written back through the `TraderAccess` and `MarketAccess` layers, so the engine never manipulates raw data directly.
 
 ## Entities
 
-Business Logic Encapsulation (Trader & Market Entities): All core trading logic is encapsulated inside the entity classes in entities/. For example, Trader has methods try_buy(volume, price) and try_sell(volume, price) which enforce cash/inventory constraints and update its own state. The Market entity has update_price(net_demand) which computes the next price based on demand. These classes bundle their data (cash, inventory, price_history, etc.) with methods to operate on that data. This is classic OOP encapsulation: implementation details (like how net worth is calculated or how price is adjusted) are hidden within the class. Importantly, these methods contain no external dependencies – they don’t call databases or I/O. This matches the clean architecture principle that the core domain (inner circle) is independent of infrastructure. In other words, our Trader and Market classes represent the “pure” business rules at the center of the design.
-
-
----
+All core trading logic is encapsulated in the entity classes under `entities/`. For example, `Trader` methods `try_buy(volume, price)` and `try_sell(volume, price)` enforce cash and inventory constraints, while `Market.update_price(net_demand)` computes the next price based on demand. These classes bundle data and behavior without external dependencies, aligning with the idea that the domain layer remains independent of infrastructure.
 
 ## Strategies
 
-The simulation uses a Strategy Pattern for trading behavior. The file strategies/base.py defines a Strategy interface with abstract method decide which every class which will inherit strategy class has to have
-
-Concrete strategies (LLM, Random, RSI, Bollinger) inherit from this base and implement decide. This mirrors the strategy pattern: the context (here LLMEngine or more generally the simulation engine) uses a strategy interface and can swap out the concrete algorithm easily. For example, LLMStrategy uses an OpenAI model to decide actions, while RandomStrategy picks a random action. The simulation controller picks the strategy class by name, and wraps it with LLMEngine, which simply holds a strategy and calls strategy.decide()
-
-Thus, adding a new strategy only requires creating a new class that implements decide, with no changes to the engine logic.
-
----
+The simulation uses a Strategy Pattern for trading behavior. The file `strategies/base.py` defines a `Strategy` interface with an abstract `decide()` method. Concrete strategies—such as LLM, Random, RSI, or Bollinger—inherit from this base and implement `decide()`. The controller selects the strategy by name and invokes `strategy.decide()` through the `LLMEngine`. Adding a new strategy only requires creating a class that implements `decide()`, with no changes needed elsewhere.
 
 ## Setup
 
-- Requirements
-```bash
-pip install -r requirements.txt
-```
+- **Install dependencies**  
+  ```bash
+  pip install -r requirements.txt
+  ```
 
 - Run the project
 ```bash
