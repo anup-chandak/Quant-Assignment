@@ -47,21 +47,6 @@ It’s just the center of business use cases. Entities and interfaces are direct
 
 ---
 
-## Market Engine (Entities & Data Access)
-
-The MarketEngine (in engines/market_engine.py) runs the simulation loop.
-It accesses the current market state and traders through the resource-access layer:
-
-In each tick, it queries the LLMEngine for each trader’s decision, updates each trader’s cash/inventory via Trader.try_buy/try_sell, and updates the market price via Market.update_price(net_demand).
-
- All state changes are written back to the in-memory databases through the TraderAccess and MarketAccess layers.
-
-This separation means the market engine never manipulates raw data
-
-It’s just the center of business use cases. Entities and interfaces are directly used here.
-
----
-
 ## Entities
 
 Business Logic Encapsulation (Trader & Market Entities): All core trading logic is encapsulated inside the entity classes in entities/. For example, Trader has methods try_buy(volume, price) and try_sell(volume, price) which enforce cash/inventory constraints and update its own state. The Market entity has update_price(net_demand) which computes the next price based on demand. These classes bundle their data (cash, inventory, price_history, etc.) with methods to operate on that data. This is classic OOP encapsulation: implementation details (like how net worth is calculated or how price is adjusted) are hidden within the class. Importantly, these methods contain no external dependencies – they don’t call databases or I/O. This matches the clean architecture principle that the core domain (inner circle) is independent of infrastructure. In other words, our Trader and Market classes represent the “pure” business rules at the center of the design.
@@ -81,12 +66,12 @@ Thus, adding a new strategy only requires creating a new class that implements d
 
 ## Setup
 
-# Requirements
+- Requirements
 ```bash
 pip install -r requirements.txt
 ```
 
-# Run the project
+- Run the project
 ```bash
 python main.py --strategy random --traders 5 --ticks 50 --init-price 10
 ```
