@@ -38,6 +38,7 @@ The simulation uses a Strategy Pattern for trading behavior. The file `strategie
 - **Clone the repo**  
   ```bash
   git clone https://github.com/anup-chandak/Quant-Assignment
+  cd Quant-Assignment
   ```
   
 - **Install dependencies**  
