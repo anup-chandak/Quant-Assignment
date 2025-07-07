@@ -35,12 +35,17 @@ The simulation uses a Strategy Pattern for trading behavior. The file `strategie
 
 ## Setup
 
+- **Clone the repo**  
+  ```bash
+  git clone https://github.com/anup-chandak/Quant-Assignment
+  ```
+  
 - **Install dependencies**  
   ```bash
   pip install -r requirements.txt
   ```
 
-- Run the project
+- **Run the project**
   ```bash
   python main.py --strategy random --traders 5 --ticks 50 --init-price 10
   ```
